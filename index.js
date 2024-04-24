@@ -4,12 +4,12 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
 
-const spotify = require("./spotify");
+const naeleckreleases = require("./naeleckreleases");
 
 app.use(express.json());
 app.use(cors());
 app.get("/", (req,res) => res.json({ success: "Hello World!" }));
 
-app.use("/spotify", spotify);
+app.use("/naeleckreleases", naeleckreleases);
 
 app.listen(port, () => console.log(`Server running on port : ${port}`));
