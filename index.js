@@ -12,7 +12,7 @@ const denhakuplaylist = require("./denhakuplaylist");
 app.use(express.json());
 app.use(cors());
 app.get("/", (req,res) => res.json({ success: "Hello World!" }));
-
+// scihub
 app.use("/naeleckreleases", naeleckreleases);
 app.use("/naeleckshows", naeleckshows);
 app.use("/dancingdeadplaylist", dancingdeadplaylist);
