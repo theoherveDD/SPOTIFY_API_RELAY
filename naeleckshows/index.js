@@ -4,14 +4,14 @@ const express = require("express");
 const fetch = require("node-fetch");
 const router = express.Router();
 
-const data = require("./data.json");
+const data = await fetch("./data.json");
+const shows = await data.json();
 
 router.get("/", async (req, res) => {
-    try {
-        const shows = await getShows();
-        res.json(shows);
-    } catch (error) {
-        console.error("Une erreur est survenue :", error);
-        res.status(500).json({ error: "Une erreur est survenue lors de la récupération des derniers shows de l'artiste Naeleck" });
-    }
-});
+    res.json(shows);
+}
+);
+
+
+module.exports = router;
+
