@@ -1,17 +1,23 @@
-// Création et exportation (dans le router) d'un JSON avec les derniers shows de l'Artiste de musique electrnique Naeleck. Le JSON doit comprendre pour chaques elements le nom, lieux, date, lien.
-
 const express = require("express");
-const fetch = require("node-fetch");
-const router = express.Router();
+const router = express.Router(); 
+const fs = require('fs');
 
-const data = await fetch("./data.json");
-const shows = await data.json();
-
-router.get("/", async (req, res) => {
-    res.json(shows);
-}
-);
-
+router.get("/naeleckshows", async (req, res) => {
+    try {
+        fs.readFile('data.json', 'utf8', (err, data) => {
+            if (err) {
+                console.error("Une erreur est survenue lors de la lecture du fichier :", err);
+                res.status(500).json({ error: "Une erreur est survenue lors de la lecture du fichier" });
+            } else {
+                const jsonData = JSON.parse(data);
+                const shows = jsonData.shows;
+                res.json(shows);
+            }
+        });
+    } catch (error) {
+        console.error("Une erreur est survenue :", error);
+        res.status(500).json({ error: "Une erreur est survenue lors de la récupération des derniers shows de l'artiste Naeleck" });
+    }
+});
 
 module.exports = router;
-
