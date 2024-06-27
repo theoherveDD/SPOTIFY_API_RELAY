@@ -59,12 +59,43 @@ async function getLatestPlaylist(playlistId, token) {
     return latestReleasesOfPlaylist;
 }
 
+async function getArtistInfo(token, artistName) {
+    const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(artistName)}&type=artist&limit=1`;
+    const response = await fetch(searchUrl, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    const data = await response.json();
+    if (data.artists.items.length > 0) {
+        return data.artists.items[0];
+    } else {
+        return null;
+    }
+  }
+
+  function getArtistImageUrl(artistInfo) {
+    if (artistInfo && artistInfo.images.length > 0) {
+        return artistInfo.images[0].url;  // Prend la première image
+    } else {
+        return 'default_image_url';  // URL d'une image par défaut si aucune image n'est disponible
+    }
+  }
+
 router.get("/", async (req, res) => {
     try {
         const playlistId = "0yN1AKMSboq8tsgmjSL3ky"; 
         const token = await getToken(); // Utilisation de await pour attendre la résolution de la promesse
         const latestReleasesOfPlaylist = await getLatestPlaylist(playlistId, token);
-        res.json(latestReleasesOfPlaylist);
+        const artists = latestReleasesOfPlaylist.map((release) => release.artists.split(", ")).flat();
+        const uniqueArtists = [...new Set(artists)];
+        const artistInfos = await Promise.all(uniqueArtists.map((artist) => getArtistInfo(token, artist)));
+        const artistImages = artistInfos.map(getArtistImageUrl);
+        res.json({
+            releases: latestReleasesOfPlaylist,
+            artistImages: artistImages
+        });
+
     } catch (error) {
         console.error("Une erreur est survenue :", error);
         res.status(500).json({ error: "Une erreur est survenue lors de la récupération des dernières sorties de l'artiste Naeleck" });
