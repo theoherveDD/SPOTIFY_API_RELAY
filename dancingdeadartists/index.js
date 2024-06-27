@@ -64,7 +64,17 @@ router.get("/", async (req, res) => {
         const playlistId = "0yN1AKMSboq8tsgmjSL3ky"; 
         const token = await getToken(); // Utilisation de await pour attendre la résolution de la promesse
         const latestReleasesOfPlaylist = await getLatestPlaylist(playlistId, token);
-        res.json(latestReleasesOfPlaylist);
+               const artistImages = [];
+        const artists = [];
+        for (let i = 0; i < latestReleasesOfPlaylist.length; i++) {
+            const artistNames = latestReleasesOfPlaylist[i].artists.split(", ");
+            for (let j = 0; j < artistNames.length; j++) {
+                const artistInfo = await getArtistInfo(token, artistNames[j]);
+                const artistImageUrl = getArtistImageUrl(artistInfo);
+                artists.push({ name: artistNames[j], image_url: artistImageUrl });
+            }
+        }
+        res.json(artists);
     } catch (error) {
         console.error("Une erreur est survenue :", error);
         res.status(500).json({ error: "Une erreur est survenue lors de la récupération des dernières sorties de l'artiste Naeleck" });
